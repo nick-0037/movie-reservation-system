@@ -6,8 +6,8 @@
 	"type": "module",
 	"scripts": {
 		"dev": "tsx --watch --env-file=.env src/server.ts",
-		"db:generate": "pnpm drizzle-kit generate",
-		"db:push": "pnpm drizzle-kit push"
+		"db:seed": "tsx --env-file=.env src/db/seed.ts",
+		"db:generate": "pnpm drizzle-kit generate"
 	},
 	"keywords": [],
 	"author": "",

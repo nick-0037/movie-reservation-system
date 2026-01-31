@@ -7,7 +7,16 @@ import {
 	varchar,
 	timestamp,
 	unique,
+	uuid,
 } from "drizzle-orm/pg-core";
+
+// Profiles (requirements: Admin, User)
+export const profiles = pgTable("profiles", {
+	id: uuid("id").primaryKey(),
+	email: varchar("email", { length: 255 }).notNull(),
+	role: varchar("role", { length: 20 }).default("user").notNull(),
+	createdAt: timestamp("created_at").defaultNow().notNull(),
+});
 
 // Movies (Requirements: Title, Desc, Poster, Genre)
 export const movies = pgTable("movies", {
@@ -71,48 +80,84 @@ export const showtimes = pgTable("showtimes", {
 
 export const reservations = pgTable("reservations", {
 	id: serial("id").primaryKey(),
-	userId: text("user_id").notNull(), // Supabase user reference
+	userId: uuid("user_id")
+		.references(() => profiles.id, { onDelete: "cascade" })
+		.notNull(), // Supabase user reference
 	showtimeId: integer("showtime_id")
 		.references(() => showtimes.id)
 		.notNull(),
+	totalPrice: integer("total_price").notNull(),
 	status: varchar("status", { length: 20 }).default("pending").notNull(), // For cancellations
 	createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
-export const reservationSeats = pgTable("reservation_seats", {
-	id: serial("id").primaryKey(),
-	reservationId: integer("reservation_id")
-		.references(() => reservations.id, { onDelete: "cascade" })
-		.notNull(),
-	seatId: integer("seat_id")
-		.references(() => seats.id)
-		.notNull(),
-});
+export const reservationSeats = pgTable(
+	"reservation_seats",
+	{
+		id: serial("id").primaryKey(),
+		reservationId: integer("reservation_id")
+			.references(() => reservations.id, { onDelete: "cascade" })
+			.notNull(),
+		seatId: integer("seat_id")
+			.references(() => seats.id)
+			.notNull(),
+	},
+	(t) => [unique().on(t.reservationId, t.seatId)],
+);
 
 // ------- Drizzle Relations -------
 
 export const moviesRelations = relations(movies, ({ many }) => ({
-    genres: many(moviesToGenres),
-    showtimes: many(showtimes),
+	genres: many(moviesToGenres),
+	showtimes: many(showtimes),
 }));
 
 export const showtimesRelations = relations(showtimes, ({ one, many }) => ({
-    movie: one(movies, { fields: [showtimes.movieId], references: [movies.id] }),
-    room: one(rooms, { fields: [showtimes.roomId], references: [rooms.id] }),
-    reservations: many(reservations),
+	movie: one(movies, { fields: [showtimes.movieId], references: [movies.id] }),
+	room: one(rooms, { fields: [showtimes.roomId], references: [rooms.id] }),
+	reservations: many(reservations),
 }));
 
-export const reservationsRelations = relations(reservations, ({ one, many }) => ({
-    showtime: one(showtimes, { fields: [reservations.showtimeId], references: [showtimes.id] }),
-    seats: many(reservationSeats),
-}));
+export const reservationsRelations = relations(
+	reservations,
+	({ one, many }) => ({
+		user: one(profiles, {
+			fields: [reservations.userId],
+			references: [profiles.id],
+		}),
+		showtime: one(showtimes, {
+			fields: [reservations.showtimeId],
+			references: [showtimes.id],
+		}),
+		seats: many(reservationSeats),
+	}),
+);
 
-export const reservationSeatsRelations = relations(reservationSeats, ({ one }) => ({
-    reservation: one(reservations, { fields: [reservationSeats.reservationId], references: [reservations.id] }),
-    seat: one(seats, { fields: [reservationSeats.seatId], references: [seats.id] }),
-}));
+export const reservationSeatsRelations = relations(
+	reservationSeats,
+	({ one }) => ({
+		reservation: one(reservations, {
+			fields: [reservationSeats.reservationId],
+			references: [reservations.id],
+		}),
+		seat: one(seats, {
+			fields: [reservationSeats.seatId],
+			references: [seats.id],
+		}),
+	}),
+);
 
 export const moviesToGenresRelations = relations(moviesToGenres, ({ one }) => ({
-    movie: one(movies, { fields: [moviesToGenres.movieId], references: [movies.id] }),
-    genre: one(genres, { fields: [moviesToGenres.genreId], references: [genres.id] }),
+	movie: one(movies, {
+		fields: [moviesToGenres.movieId],
+		references: [movies.id],
+	}),
+	genre: one(genres, {
+		fields: [moviesToGenres.genreId],
+		references: [genres.id],
+	}),
+}));
+
+export const profilesRelations = relations(profiles, ({ many }) => ({
+	reservations: many(reservations),
 }));
