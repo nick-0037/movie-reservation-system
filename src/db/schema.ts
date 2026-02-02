@@ -158,6 +158,10 @@ export const moviesToGenresRelations = relations(moviesToGenres, ({ one }) => ({
 	}),
 }));
 
+export const genresRelations = relations(genres, ({ many }) => ({
+    movies: many(moviesToGenres),
+}))
+
 export const profilesRelations = relations(profiles, ({ many }) => ({
 	reservations: many(reservations),
 }));
