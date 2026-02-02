@@ -6,8 +6,8 @@ const service = movieService(db);
 
 export const createMovie = async (req: Request, res: Response) => {
 	try {
-		const data = req.body;
-		const movie = await service.createMovie(data);
+		const { genreIds, ...data } = req.body;
+		const movie = await service.createMovie(data, genreIds);
 
 		return res.status(201).json({
 			message: "Movie created successfully",
