@@ -6,6 +6,6 @@ import { authenticate } from "../middlewares/authenticate.middleware";
 const router = Router();
 
 router.post("/", authenticate, isAdmin, showtimeController.createShowtime);
-router.get("/", authenticate, isAdmin, showtimeController.getShowTime);
+router.get("/", authenticate, isAdmin, showtimeController.getShowtime);
 
 export default router;

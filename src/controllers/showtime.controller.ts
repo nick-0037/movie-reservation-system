@@ -19,7 +19,7 @@ export const createShowtime = async (req: Request, res: Response) => {
 	}
 };
 
-export const getShowTime = async (req: Request, res: Response) => {
+export const getShowtime = async (req: Request, res: Response) => {
 	try {
 		const id = Number(req.params.id);
 		const showtime = await service.getShowtimeByMovie(id);
