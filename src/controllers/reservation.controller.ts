@@ -48,7 +48,7 @@ export const getUsersReservations = async (req: Request, res: Response) => {
 
 export const cancelReservation = async (req: Request, res: Response) => {
 	try {
-		const id = Number(req.params);
+		const id = Number(req.params.id);
 		const user = req.user as User;
 
 		await service.cancelReservation(id, user.id);
