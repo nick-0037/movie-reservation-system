@@ -8,6 +8,7 @@ import {
 	timestamp,
 	unique,
 	uuid,
+	doublePrecision
 } from "drizzle-orm/pg-core";
 
 // Profiles (requirements: Admin, User)
@@ -86,7 +87,7 @@ export const reservations = pgTable("reservations", {
 	showtimeId: integer("showtime_id")
 		.references(() => showtimes.id)
 		.notNull(),
-	totalPrice: integer("total_price").notNull(),
+	totalPrice: doublePrecision("total_price").notNull(),
 	status: varchar("status", { length: 20 }).default("pending").notNull(), // For cancellations
 	createdAt: timestamp("created_at").defaultNow().notNull(),
 });
@@ -159,8 +160,8 @@ export const moviesToGenresRelations = relations(moviesToGenres, ({ one }) => ({
 }));
 
 export const genresRelations = relations(genres, ({ many }) => ({
-    movies: many(moviesToGenres),
-}))
+	movies: many(moviesToGenres),
+}));
 
 export const profilesRelations = relations(profiles, ({ many }) => ({
 	reservations: many(reservations),
