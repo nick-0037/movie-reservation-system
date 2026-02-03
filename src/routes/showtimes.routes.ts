@@ -8,5 +8,11 @@ const router = Router();
 router.post("/", authenticate, isAdmin, showtimeController.createShowtime);
 router.get("/", authenticate, isAdmin, showtimeController.getShowtimesByDate);
 router.get("/:id", authenticate, isAdmin, showtimeController.getShowtime);
+router.get(
+	"/:id/seats",
+	authenticate,
+	isAdmin,
+	showtimeController.getAvailableSeats,
+);
 
 export default router;

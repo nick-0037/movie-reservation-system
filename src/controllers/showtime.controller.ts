@@ -84,3 +84,19 @@ export const getShowtimesByDate = async (req: Request, res: Response) => {
 		return res.status(500).json({ message: "Internal server error" });
 	}
 };
+
+export const getAvailableSeats = async (req: Request, res: Response) => {
+	try {
+		const id = Number(req.params.id);
+
+		const seats = await service.getAvailableSeats(id);
+
+		res.status(200).json({
+			message: "Seats available retrieved by showtime",
+			data: seats,
+		});
+	} catch (e) {
+		console.error(e);
+		return res.status(500).json({ message: "Internal server error" });
+	}
+};

@@ -1,4 +1,4 @@
-import { InferInsertModel, eq, gte } from "drizzle-orm";
+import { InferInsertModel, eq, sql } from "drizzle-orm";
 import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import * as schema from "../db/schema";
 
@@ -37,5 +37,33 @@ export const showtimeService = (db: PostgresJsDatabase<typeof schema>) => ({
 				room: true,
 			},
 		});
+	},
+
+	getAvailableSeats: async (showtimeId: number) => {
+		const showtime = await db.query.showtimes.findFirst({
+			where: eq(schema.showtimes.id, showtimeId),
+		});
+
+		if (!showtime) throw new Error("Showtime not found");
+
+		const s = schema.seats;
+
+		const seatsWithAvailability = await db
+			.select({
+				id: s.id,
+				row: s.row,
+				number: s.number,
+				idAvailable: sql<boolean>`NOT EXISTS (
+				SELECT 1 FROM ${schema.reservationSeats} rs
+				JOIN ${schema.reservations} r ON rs.reservation_id = r.id
+				WHERE rs.seat_id = ${sql`${s.id}`}
+				AND r.showtime_id = ${showtimeId}
+				AND r.status != 'cancelled'
+			)`,
+			})
+			.from(s)
+			.where(eq(s.roomId, showtime.roomId));
+
+		return seatsWithAvailability;
 	},
 });
