@@ -8,7 +8,7 @@ import {
 	timestamp,
 	unique,
 	uuid,
-	doublePrecision
+	doublePrecision,
 } from "drizzle-orm/pg-core";
 
 // Profiles (requirements: Admin, User)
@@ -89,6 +89,7 @@ export const reservations = pgTable("reservations", {
 		.notNull(),
 	totalPrice: doublePrecision("total_price").notNull(),
 	status: varchar("status", { length: 20 }).default("pending").notNull(), // For cancellations
+	stripePaymentIntentId: text("stripe_payment_intent_id"),
 	createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 

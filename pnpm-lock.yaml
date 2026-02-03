@@ -20,6 +20,9 @@ importers:
       postgres:
         specifier: ^3.4.8
         version: 3.4.8
+      stripe:
+        specifier: ^20.3.0
+        version: 20.3.0(@types/node@25.1.0)
     devDependencies:
       '@types/express':
         specifier: ^5.0.6
@@ -934,6 +937,15 @@ packages:
     resolution: {integrity: sha512-DvEy55V3DB7uknRo+4iOGT5fP1slR8wQohVdknigZPMpMstaKJQWhwiYBACJE3Ul2pTnATihhBYnRhZQHGBiRw==}
     engines: {node: '>= 0.8'}
 
+  stripe@20.3.0:
+    resolution: {integrity: sha512-DYzcmV1MfYhycr1GwjCjeQVYk9Gu8dpxyTlu7qeDCsuguug7oUTxPsUQuZeSf/OPzK7pofqobvOKVqAwlpgf/Q==}
+    engines: {node: '>=16'}
+    peerDependencies:
+      '@types/node': '>=16'
+    peerDependenciesMeta:
+      '@types/node':
+        optional: true
+
   toidentifier@1.0.1:
     resolution: {integrity: sha512-o5sSPKEkg/DIQNmH43V0/uerLrpzVedkUh8tGNvaeXpfpuwjKenlSox/2O/BTlZUtEe+JG7s5YhEz608PlAHRA==}
     engines: {node: '>=0.6'}
@@ -1704,6 +1716,10 @@ snapshots:
   source-map@0.6.1: {}
 
   statuses@2.0.2: {}
+
+  stripe@20.3.0(@types/node@25.1.0):
+    optionalDependencies:
+      '@types/node': 25.1.0
 
   toidentifier@1.0.1: {}
 
